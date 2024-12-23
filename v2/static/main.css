@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    overflow-y: scroll;
+    height: 200vh;
+    background-color: #0d1b2a; /* Dark blue background */
+    font-family: 'Arial', sans-serif;
+    color: #ffffff;
+    text-align: center;
+    scroll-behavior: smooth;
+}
+
+canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.content {
+    position: relative;
+    margin-top: 20vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Slightly transparent background */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+    color: #42a5f5; /* Light blue heading */
+}
+
+p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+    color: #90caf9; /* Soft blue paragraph text */
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #42a5f5, #1976d2); /* Gradient with blue shades */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 200px;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #64b5f6, #2196f3); /* Lighter blue gradient on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.7);
+}
+
+button:active {
+    transform: scale(0.95);
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chapter 3: The Final Riddle</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .overlay {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>Chapter 3: The Final Riddle</h1>
+        <p>Point your camera at a fork to solve the riddle.</p>
+    </div>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let model;
+
+        async function loadModel() {
+            model = await cocoSsd.load();
+            console.log('Model loaded successfully.');
+            startVideo();
+        }
+
+        function startVideo() {
+            navigator.mediaDevices
+                .getUserMedia({ video: { facingMode: 'environment' } })
+                .then((stream) => {
+                    video.srcObject = stream;
+                    video.addEventListener('loadeddata', detectObjects);
+                })
+                .catch((err) => {
+                    console.error('Error accessing camera: ', err);
+                });
+        }
+
+        async function detectObjects() {
+            const predictions = await model.detect(video);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            predictions.forEach((prediction) => {
+                if (prediction.class === 'fork') {
+                    alert('Game Over! You detected a fork!');
+                    stopVideo();
+                }
+
+                // Draw bounding boxes and labels
+                ctx.strokeStyle = 'green';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(
+                    prediction.bbox[0],
+                    prediction.bbox[1],
+                    prediction.bbox[2],
+                    prediction.bbox[3]
+                );
+                ctx.fillStyle = 'green';
+                ctx.font = '16px Arial';
+                ctx.fillText(
+                    prediction.class,
+                    prediction.bbox[0],
+                    prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10
+                );
+            });
+
+            requestAnimationFrame(detectObjects);
+        }
+
+        function stopVideo() {
+            const stream = video.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach((track) => track.stop());
+            video.srcObject = null;
+        }
+
+        window.onload = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            loadModel();
+        };
+    </script>
+</body>
+</html>

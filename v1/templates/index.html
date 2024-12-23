@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Story</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Interactive Story!</h1>
+    <p>Begin your journey by clicking the button below.</p>
+    <a href="{{ url_for('chapter1') }}"><button>Start the Adventure</button></a>
+</body>
+</html>

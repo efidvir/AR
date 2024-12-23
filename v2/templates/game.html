@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game - Vote for the Correct Riddle Answer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1b2a;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        }
+
+        h1 {
+            color: #42a5f5;
+            margin-bottom: 20px;
+        }
+
+        .riddle {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #90caf9;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            background-color: #1e2d3d;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #fb8c00;
+        }
+
+        #voteMessage {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #90caf9;
+        }
+
+        #winningOption {
+            margin-top: 30px;
+            font-size: 1.8rem;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        /* Floating window for vote count */
+        #voteCount {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #1e2d3d;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vote for the Correct Answer</h1>
+        <div class="riddle">
+            <p>What has to be broken before you can use it?</p>
+        </div>
+        <ul id="optionsList" class="options">
+            <li>
+                <span>An Egg</span>
+                <button onclick="castVote('An Egg')">Vote</button>
+            </li>
+            <li>
+                <span>A Lock</span>
+                <button onclick="castVote('A Lock')">Vote</button>
+            </li>
+            <li>
+                <span>A Mirror</span>
+                <button onclick="castVote('A Mirror')">Vote</button>
+            </li>
+            <li>
+                <span>A Glass</span>
+                <button onclick="castVote('A Glass')">Vote</button>
+            </li>
+        </ul>
+        <p id="voteMessage">Cast your vote by clicking a button above.</p>
+        <p id="winningOption" style="display: none;"></p>
+
+        <!-- Floating window for vote count -->
+        <div id="voteCount">Votes: 0</div>
+    </div>
+
+    <script>
+        const socket = io.connect(window.location.origin);
+        let playerVoted = false;
+        let totalVotes = 0;
+        const voteCountElement = document.getElementById('voteCount');
+
+        function castVote(option) {
+            if (!playerVoted) {
+                socket.emit('vote', { option });
+                playerVoted = true;
+                document.getElementById('voteMessage').textContent = `Great choice! You voted for "${option}". Let's see what everyone else thinks...`;
+            } else {
+                alert('You have already voted!');
+            }
+        }
+
+        socket.on('update_votes', (votes) => {
+            totalVotes = Object.values(votes).reduce((sum, count) => sum + count, 0);
+            voteCountElement.textContent = `Votes: ${totalVotes}`;
+            document.getElementById('voteMessage').textContent = 'Votes are coming in... Waiting for everyone to decide!';
+        });
+
+        socket.on('winning_option', (winningOption) => {
+            document.getElementById('winningOption').textContent = `🎉 The winning option is: "${winningOption}"! 🎉`;
+            document.getElementById('winningOption').style.display = 'block';
+            document.getElementById('voteMessage').textContent = 'Voting is complete!';
+        });
+    </script>
+</body>
+</html>

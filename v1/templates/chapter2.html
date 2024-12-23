@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: The Hidden Path</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .input-container {
+            margin: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 60%;
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .message {
+            font-size: 18px;
+            color: green;
+            margin: 20px;
+        }
+        .mic-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chapter 2: The Hidden Path</h1>
+    <p>Solve this riddle: I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?</p>
+
+    <!-- Input and Speech Recognition -->
+    <div class="input-container">
+        <input type="text" id="answer" placeholder="Type your answer here..." />
+        <button onclick="checkAnswer()">Submit</button>
+        <button class="mic-button" onclick="startSpeechRecognition()">🎤</button>
+    </div>
+
+    <!-- Feedback Message -->
+    <div id="message" class="message hidden"></div>
+
+    <!-- Next Chapter Button -->
+    <a href="{{ url_for('chapter3') }}">
+        <button id="next-button" class="hidden">Next Chapter</button>
+    </a>
+
+    <script>
+        function checkAnswer() {
+            const answer = document.getElementById('answer').value.trim().toLowerCase();
+            const message = document.getElementById('message');
+            const nextButton = document.getElementById('next-button');
+
+            if (answer === 'echo') {
+                message.textContent = 'Correct! You may proceed to the next chapter.';
+                message.classList.remove('hidden');
+                nextButton.classList.remove('hidden');
+            } else {
+                message.textContent = 'Incorrect. Try again!';
+                message.classList.remove('hidden');
+                nextButton.classList.add('hidden');
+            }
+        }
+
+        function startSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                alert('Speech recognition is not supported in this browser.');
+                return;
+            }
+
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('answer').value = transcript;
+                checkAnswer();
+            };
+
+            recognition.onerror = (event) => {
+                alert('Speech recognition error: ' + event.error);
+            };
+        }
+    </script>
+</body>
+</html>
